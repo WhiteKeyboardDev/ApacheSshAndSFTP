@@ -1,6 +1,5 @@
 # Custom
 .gradle/*
-src/main/java/my
 out/
 
 # Compiled class file
