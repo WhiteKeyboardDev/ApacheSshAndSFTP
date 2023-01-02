@@ -1,0 +1,68 @@
+plugins {
+    id 'java'
+}
+
+/*jar{
+    manifest {
+        attributes 'Main-Class': 'core.main.LinuxSshServer'
+    }
+
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}*/
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+/*group 'org.example'*/
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //defulat
+//    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+//    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    //slf4j
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.2'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+
+    //log4j2
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
+    implementation 'org.apache.logging.log4j:log4j-jcl:2.17.1'
+
+    //Apache Mina SSHD 2.8.0
+//    implementation 'org.apache.sshd:sshd-core:2.9.1'
+//    implementation 'org.apache.sshd:sshd-common:2.9.1'
+//    implementation 'org.apache.sshd:sshd-putty:2.8.0'
+
+    //Apache Mina SSHD 2.8.0 Dependencies
+    implementation 'net.i2p.crypto:eddsa:0.3.0'
+    implementation 'org.bouncycastle:bcpg-jdk15on:1.70'
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.70'
+    implementation 'tomcat:tomcat-apr:5.5.23'
+
+}
+
+//Project External Library Extraction
+configurations { externalLib.extendsFrom(implementation) }
+task copyLibs(type: Copy){
+    from configurations.externalLib{
+        into 'C:/Users/1234/Desktop/jar'
+        //exclude('<if any jars need to be excluded>')
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
