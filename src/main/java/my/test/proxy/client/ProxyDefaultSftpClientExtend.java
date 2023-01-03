@@ -6,6 +6,7 @@ import org.apache.sshd.common.SshException;
 import org.apache.sshd.common.session.Session;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.buffer.Buffer;
+import org.apache.sshd.common.util.buffer.ByteArrayBuffer;
 import org.apache.sshd.core.CoreModuleProperties;
 import org.apache.sshd.sftp.client.SftpErrorDataHandler;
 import org.apache.sshd.sftp.client.SftpVersionSelector;
@@ -15,7 +16,6 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
 
 public class ProxyDefaultSftpClientExtend extends DefaultSftpClient {
 
@@ -40,7 +40,13 @@ public class ProxyDefaultSftpClientExtend extends DefaultSftpClient {
         System.out.println("■■■■■■■■■■■Client■■ data ■■■■■■■■■■■■■■■");
         System.out.println(new String(buf, start, len));
         System.out.println();
-        return super.data(buf, start, len);
+        if (sftpSubsystemExtend != null && singleSftpClient.isAuthenticationSuccessClientSession && singleSftpClient.serverAuthenticated) {
+            Buffer buff = new ByteArrayBuffer(buf, start, len);
+            sftpSubsystemExtend.publicSend(buff);
+            return 0;
+        } else {
+            return super.data(buf, start, len);
+        }
     }
 
     // Target Server 로 보내기
@@ -58,12 +64,7 @@ public class ProxyDefaultSftpClientExtend extends DefaultSftpClient {
     @Override
     protected void process(Buffer incoming) throws IOException {
         System.out.println("■■■■■■■■■■■Client■■ process ■■■■■■■■■■■■■■■");
-        if (sftpSubsystemExtend != null && singleSftpClient.isAuthenticationSuccessClientSession && singleSftpClient.serverAuthenticated) {
-            sftpSubsystemExtend.publicSend(incoming);
-        } else {
-            super.process(incoming);
-        }
-
+        super.process(incoming);
     }
 
     /* receive */

@@ -1,6 +1,7 @@
 package my.test.proxy.server;
 
 import my.test.proxy.client.SingleSftpClient;
+import org.apache.sshd.common.SshConstants;
 import org.apache.sshd.common.util.buffer.Buffer;
 import org.apache.sshd.common.util.buffer.BufferUtils;
 import org.apache.sshd.common.util.buffer.ByteArrayBuffer;
@@ -52,9 +53,6 @@ public class SftpSubsystemExtend extends SftpSubsystem {
 
     @Override
     protected void doProcess(Buffer buffer, int length, int type, int id) throws IOException {
-        if (getServerChannelSession().isOpen() == true && singleSftpClient.isAuthenticationSuccessClientSession && singleSftpClient.serverAuthenticated) {
-            singleSftpClient.getProxyDefaultSftpClientExtend().publicSend(id, buffer);
-        } else {
             switch (type) {
                 case SftpConstants.SSH_FXP_INIT:
                     doInit(buffer, id);
@@ -129,14 +127,14 @@ public class SftpSubsystemExtend extends SftpSubsystem {
                     doUnsupported(buffer, length, type, id);
                     break;
             }
-        }
+//        }
     }
 
     // 호스트로 보내기
     @Override
     protected void send(Buffer buffer) throws IOException {
         System.out.println("■■■■■■■■■■■Server■■ send ■■■■■■■■■■■■■■■");
-        BufferUtils.updateLengthPlaceholder(buffer, 0);
+        System.out.println(new String(buffer.array()));
         super.send(buffer);
     }
 
@@ -151,22 +149,11 @@ public class SftpSubsystemExtend extends SftpSubsystem {
         String str = new String(buf, start, len);
         System.out.println(str);
 
-        buffer.compact();
-        buffer.putRawBytes(buf, start, len);
-        while (buffer.available() >= Integer.BYTES) {
-            int rpos = buffer.rpos();
-            int msglen = buffer.getInt();
-            if (buffer.available() >= msglen) {
-                Buffer b = new ByteArrayBuffer(msglen + Integer.BYTES + Long.SIZE /* a bit extra */, false);
-                b.putUInt(msglen);
-                b.putRawBytes(buffer.array(), buffer.rpos(), msglen);
-                requests.add(b);
-                buffer.rpos(rpos + msglen + Integer.BYTES);
-            } else {
-                buffer.rpos(rpos);
-                break;
-            }
-        }
+        Buffer buff = new ByteArrayBuffer(buf, start, len);
+        singleSftpClient.getProxyDefaultSftpClientExtend()
+                .publicSend(SshConstants.SSH_MSG_CHANNEL_DATA, buff);
+
+//        super.data(channel, buf, start, len);
         return 0;
     }
 }

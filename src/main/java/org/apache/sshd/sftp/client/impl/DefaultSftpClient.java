@@ -71,7 +71,7 @@ import org.apache.sshd.sftp.server.SftpSubsystemEnvironment;
 public class DefaultSftpClient extends AbstractSftpClient {
     private final ClientSession clientSession;
     private final ChannelSubsystem channel;
-    private final Map<Integer, Buffer> messages = new HashMap<>();
+    public final Map<Integer, Buffer> messages = new HashMap<>();
     private final AtomicInteger cmdId = new AtomicInteger(100);
     private final Buffer receiveBuffer = new ByteArrayBuffer();
     private final AtomicInteger versionHolder = new AtomicInteger(0);

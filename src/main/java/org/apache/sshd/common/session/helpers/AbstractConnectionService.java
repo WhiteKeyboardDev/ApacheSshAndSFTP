@@ -56,10 +56,7 @@ import org.apache.sshd.common.forward.PortForwardingEventListenerManager;
 import org.apache.sshd.common.io.AbstractIoWriteFuture;
 import org.apache.sshd.common.io.IoWriteFuture;
 import org.apache.sshd.common.kex.KexState;
-import org.apache.sshd.common.session.ConnectionService;
-import org.apache.sshd.common.session.ReservedSessionMessagesHandler;
-import org.apache.sshd.common.session.Session;
-import org.apache.sshd.common.session.UnknownChannelReferenceHandler;
+import org.apache.sshd.common.session.*;
 import org.apache.sshd.common.util.EventListenerUtils;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.ValidateUtils;
@@ -448,6 +445,12 @@ public abstract class AbstractConnectionService
 
     @Override
     public void process(int cmd, Buffer buffer) throws Exception {
+        System.out.println();
+        System.out.println("■■■■■■■■■■■■■■■■ This 'SshConstants."+SshConstants.getCommandMessageName(cmd)+"'");
+        System.out.println("■■■■■■■■■■■■■■■■ byteData : ");
+        System.out.println(new String(buffer.array()));
+        System.out.println();
+
         switch (cmd) {
             case SshConstants.SSH_MSG_CHANNEL_OPEN:
                 channelOpen(buffer);

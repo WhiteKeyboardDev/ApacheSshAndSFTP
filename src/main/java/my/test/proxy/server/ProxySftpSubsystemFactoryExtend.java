@@ -28,9 +28,8 @@ public class ProxySftpSubsystemFactoryExtend extends SftpSubsystemFactory {
         // Client daemon add
         singleSftpClient.setServerAuthenticated(true);
         singleSftpClient.setSftpSubsystemExtend(sftpSubsystemExtend);
-
         singleSftpClient.createSftpClient();
-
+        
         System.out.println("쓰레드 잠자기 시작");
         try {
             Thread.sleep(1000);

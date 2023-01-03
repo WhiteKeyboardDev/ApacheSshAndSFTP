@@ -50,7 +50,6 @@ public class SingleSftpClient extends Thread {
         // session create
         SshClient client = SshClient.setUpDefaultClient();
         client.start();
-        // win server
         ClientSession clientSession = null;
         try {
 //            clientSession = client.connect("root", "192.168.5.171", 2024).verify().getSession();
@@ -66,28 +65,20 @@ public class SingleSftpClient extends Thread {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("session : " + tt.isSuccess());
 
 
         // sftp client - default
         ProxyDefaultSftpClientFactoryExtend defaultSftpClientFactory = new ProxyDefaultSftpClientFactoryExtend();
-        try {
-            proxyDefaultSftpClientExtend =
-                    defaultSftpClientFactory.createDefaultSftpClient(
-                            clientSession,
-                            SftpVersionSelector.CURRENT,
-                            SftpErrorDataHandler.EMPTY
-                    );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        proxyDefaultSftpClientExtend = defaultSftpClientFactory.createDefaultSftpClient(clientSession,
+                SftpVersionSelector.CURRENT,
+                SftpErrorDataHandler.EMPTY
+        );
 
         proxyDefaultSftpClientExtend.setProxySingleSftpClient(this);
         proxyDefaultSftpClientExtend.setProxySftpSubsystemExtend(sftpSubsystemExtend);
         isAuthenticationSuccessClientSession = true;
 
-        proxyDefaultSftpClientExtend.open("/opt");
-        proxyDefaultSftpClientExtend.read("/opt/tet.txt");
+//        proxyDefaultSftpClientExtend.open("/opt");
 
         start();
     }
