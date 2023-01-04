@@ -142,6 +142,7 @@ public class SftpSubsystemExtend extends SftpSubsystem {
         send(buffer);
     }
 
+   static int count = 0;
     // 처음 데이터 오는 지점. (클라이언트로 보내고)
     @Override
     public int data(ChannelSession channel, byte[] buf, int start, int len) throws IOException {
@@ -149,11 +150,31 @@ public class SftpSubsystemExtend extends SftpSubsystem {
         String str = new String(buf, start, len);
         System.out.println(str);
 
-        Buffer buff = new ByteArrayBuffer(buf, start, len);
-        singleSftpClient.getProxyDefaultSftpClientExtend()
-                .publicSend(SshConstants.SSH_MSG_CHANNEL_DATA, buff);
-
-//        super.data(channel, buf, start, len);
+        if(count == 0){
+            count++;
+            super.data(channel, buf, start, len);
+        }else{
+            singleSftpClient.getProxyDefaultSftpClientExtend().publicData(buf, start, len);
+        }
         return 0;
     }
+    public void publicData(byte[] buf, int start, int len) {
+        buffer.compact();
+        buffer.putRawBytes(buf, start, len);
+        while (buffer.available() >= Integer.BYTES) {
+            int rpos = buffer.rpos();
+            int msglen = buffer.getInt();
+            if (buffer.available() >= msglen) {
+                Buffer b = new ByteArrayBuffer(msglen + Integer.BYTES + Long.SIZE /* a bit extra */, false);
+                b.putUInt(msglen);
+                b.putRawBytes(buffer.array(), buffer.rpos(), msglen);
+                requests.add(b);
+                buffer.rpos(rpos + msglen + Integer.BYTES);
+            } else {
+                buffer.rpos(rpos);
+                break;
+            }
+        }
+    }
+
 }

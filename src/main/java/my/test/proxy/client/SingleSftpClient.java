@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 public class SingleSftpClient extends Thread {
 
+    static public SingleSftpClient singleSftpClient = new SingleSftpClient();
+
     public static boolean isAuthenticationSuccessClientSession = false;
     public static boolean serverAuthenticated = false;
 
@@ -78,14 +80,12 @@ public class SingleSftpClient extends Thread {
         proxyDefaultSftpClientExtend.setProxySftpSubsystemExtend(sftpSubsystemExtend);
         isAuthenticationSuccessClientSession = true;
 
-//        proxyDefaultSftpClientExtend.open("/opt");
-
         start();
     }
 
     @Override
     public void run() {
-        for (; ; ) {
+        for (;;) {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {

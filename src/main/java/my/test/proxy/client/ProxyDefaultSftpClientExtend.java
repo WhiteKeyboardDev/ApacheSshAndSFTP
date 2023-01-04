@@ -42,11 +42,15 @@ public class ProxyDefaultSftpClientExtend extends DefaultSftpClient {
         System.out.println();
         if (sftpSubsystemExtend != null && singleSftpClient.isAuthenticationSuccessClientSession && singleSftpClient.serverAuthenticated) {
             Buffer buff = new ByteArrayBuffer(buf, start, len);
-            sftpSubsystemExtend.publicSend(buff);
+            sftpSubsystemExtend.publicData(buf, start, len);
             return 0;
         } else {
             return super.data(buf, start, len);
         }
+    }
+
+    public void publicData(byte[] buf, int start, int len) throws IOException {
+        super.data(buf, start, len);
     }
 
     // Target Server 로 보내기
@@ -55,11 +59,6 @@ public class ProxyDefaultSftpClientExtend extends DefaultSftpClient {
         System.out.println("■■■■■■■■■■■Client■■ send ■■■■■■■■■■■■■■■");
         return super.send(cmd, buffer);
     }
-
-    public void publicSend(int cmd, Buffer buffer) throws IOException {
-        send(cmd, buffer);
-    }
-
 
     @Override
     protected void process(Buffer incoming) throws IOException {

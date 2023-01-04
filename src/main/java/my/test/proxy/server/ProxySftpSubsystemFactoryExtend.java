@@ -13,31 +13,17 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import static my.test.proxy.client.SingleSftpClient.singleSftpClient;
+
 public class ProxySftpSubsystemFactoryExtend extends SftpSubsystemFactory {
 
     @Override
     public Command createSubsystem(ChannelSession channel) throws IOException {
-
-        // Client daemon start
-        SingleSftpClient singleSftpClient = new SingleSftpClient();
-
         SftpSubsystemExtend sftpSubsystemExtend = new SftpSubsystemExtend(channel, this);
         GenericUtils.forEach(getRegisteredListeners(), sftpSubsystemExtend::addSftpEventListener);
         sftpSubsystemExtend.setSingleSftpClient(singleSftpClient);
-
-        // Client daemon add
-        singleSftpClient.setServerAuthenticated(true);
         singleSftpClient.setSftpSubsystemExtend(sftpSubsystemExtend);
-        singleSftpClient.createSftpClient();
-        
-        System.out.println("쓰레드 잠자기 시작");
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println("쓰레드 잠자기 끝");
-
+        singleSftpClient.setServerAuthenticated(true);
         return sftpSubsystemExtend;
     }
 
