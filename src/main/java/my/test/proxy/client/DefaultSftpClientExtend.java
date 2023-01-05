@@ -1,8 +1,11 @@
 package my.test.proxy.client;
 
 import my.test.proxy.server.SftpSubsystemExtend;
+import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.SshException;
+import org.apache.sshd.common.io.IoOutputStream;
+import org.apache.sshd.common.io.IoWriteFuture;
 import org.apache.sshd.common.session.Session;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.buffer.Buffer;
@@ -17,7 +20,7 @@ import java.io.InterruptedIOException;
 import java.time.Duration;
 import java.time.Instant;
 
-public class ProxyDefaultSftpClientExtend extends DefaultSftpClient {
+public class DefaultSftpClientExtend extends DefaultSftpClient {
 
     private SingleSftpClient singleSftpClient;
     private SftpSubsystemExtend sftpSubsystemExtend;
@@ -26,7 +29,7 @@ public class ProxyDefaultSftpClientExtend extends DefaultSftpClient {
         this.singleSftpClient = singleSftpClient;
     }
 
-    public ProxyDefaultSftpClientExtend(ClientSession clientSession, SftpVersionSelector initialVersionSelector, SftpErrorDataHandler errorDataHandler) throws IOException {
+    public DefaultSftpClientExtend(ClientSession clientSession, SftpVersionSelector initialVersionSelector, SftpErrorDataHandler errorDataHandler) throws IOException {
         super(clientSession, initialVersionSelector, errorDataHandler);
     }
 
@@ -41,16 +44,12 @@ public class ProxyDefaultSftpClientExtend extends DefaultSftpClient {
         System.out.println(new String(buf, start, len));
         System.out.println();
         if (sftpSubsystemExtend != null && singleSftpClient.isAuthenticationSuccessClientSession && singleSftpClient.serverAuthenticated) {
-            Buffer buff = new ByteArrayBuffer(buf, start, len);
-            sftpSubsystemExtend.publicData(buf, start, len);
+            Buffer send = new ByteArrayBuffer(buf, start, len);
+            sftpSubsystemExtend.publicSend(send);
             return 0;
         } else {
             return super.data(buf, start, len);
         }
-    }
-
-    public void publicData(byte[] buf, int start, int len) throws IOException {
-        super.data(buf, start, len);
     }
 
     // Target Server 로 보내기
@@ -58,6 +57,10 @@ public class ProxyDefaultSftpClientExtend extends DefaultSftpClient {
     public int send(int cmd, Buffer buffer) throws IOException {
         System.out.println("■■■■■■■■■■■Client■■ send ■■■■■■■■■■■■■■■");
         return super.send(cmd, buffer);
+    }
+
+    public void publicSend(byte[] buf, int start, int len) {
+
     }
 
     @Override
@@ -70,15 +73,9 @@ public class ProxyDefaultSftpClientExtend extends DefaultSftpClient {
     @Override
     protected boolean receive(Buffer incoming) throws IOException {
         System.out.println("■■■■■■■■■■■Client■■ receive - protected ■■■■■■■■■■■■■■■");
-
+        System.out.println(new String(incoming.array()));
         System.out.println("");
-//        if (sftpSubsystemExtend != null && singleSftpClient.isAuthenticationSuccessClientSession && singleSftpClient.serverAuthenticated) {
-//            sftpSubsystemExtend.publicSend(incoming);
-//            return false;
-//        } else {
         return super.receive(incoming);
-//        }
-
     }
 
     @Override
@@ -104,11 +101,8 @@ public class ProxyDefaultSftpClientExtend extends DefaultSftpClient {
 
             Buffer buffer = receive(id, Duration.between(now, waitEnd));
             if (buffer != null) {
-//                if (sftpSubsystemExtend != null && singleSftpClient.isAuthenticationSuccessClientSession && singleSftpClient.serverAuthenticated) {
-//                    sftpSubsystemExtend.publicSend(buffer);
-//                } else {
+                System.out.println(new String(buffer.array()));
                 return buffer;
-//                }
             }
 
             now = Instant.now();
@@ -129,13 +123,11 @@ public class ProxyDefaultSftpClientExtend extends DefaultSftpClient {
         System.out.println("■■■■■■■■■■■Client■■ receive2 - Duration - Override ■■■■■■■■■■■■■■■");
 
         synchronized (messages) {
+            System.out.println("■■■■■■■■■■■Client■■ messages ExtendClient ■■■■■■■■■■■");
             Buffer buffer = messages.remove(id);
             if (buffer != null) {
-//                if (sftpSubsystemExtend != null && singleSftpClient.isAuthenticationSuccessClientSession && singleSftpClient.serverAuthenticated) {
-//                    sftpSubsystemExtend.publicSend(buffer);
-//                } else {
+                System.out.println(new String(buffer.array()));
                 return buffer;
-//                }
             }
             if (GenericUtils.isPositive(idleTimeout)) {
                 try {
@@ -147,5 +139,6 @@ public class ProxyDefaultSftpClientExtend extends DefaultSftpClient {
         }
         return null;
     }
+
 
 }

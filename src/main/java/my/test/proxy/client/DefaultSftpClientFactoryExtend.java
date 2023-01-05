@@ -7,11 +7,11 @@ import org.apache.sshd.sftp.client.impl.DefaultSftpClientFactory;
 
 import java.io.IOException;
 
-public class ProxyDefaultSftpClientFactoryExtend extends DefaultSftpClientFactory {
+public class DefaultSftpClientFactoryExtend extends DefaultSftpClientFactory {
     @Override
-    public ProxyDefaultSftpClientExtend createDefaultSftpClient(
+    public DefaultSftpClientExtend createDefaultSftpClient(
             ClientSession session, SftpVersionSelector selector, SftpErrorDataHandler errorDataHandler)
             throws IOException {
-        return new ProxyDefaultSftpClientExtend(session, selector, errorDataHandler);
+        return new DefaultSftpClientExtend(session, selector, errorDataHandler);
     }
 }
