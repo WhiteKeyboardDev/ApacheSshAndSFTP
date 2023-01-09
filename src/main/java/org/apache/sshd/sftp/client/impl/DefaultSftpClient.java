@@ -70,10 +70,10 @@ import org.apache.sshd.sftp.server.SftpSubsystemEnvironment;
  */
 public class DefaultSftpClient extends AbstractSftpClient {
     private final ClientSession clientSession;
-    private final ChannelSubsystem channel;
+    public final ChannelSubsystem channel;
     public final Map<Integer, Buffer> messages = new HashMap<>();
-    private final AtomicInteger cmdId = new AtomicInteger(100);
-    private final Buffer receiveBuffer = new ByteArrayBuffer();
+    public final AtomicInteger cmdId = new AtomicInteger(100);
+    public final Buffer receiveBuffer = new ByteArrayBuffer();
     private final AtomicInteger versionHolder = new AtomicInteger(0);
     private final AtomicBoolean closing = new AtomicBoolean(false);
     private final NavigableMap<String, byte[]> extensions = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -102,6 +102,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
         this.channel.open().verify(initializationTimeout);
         this.channel.onClose(() -> {
             synchronized (messages) {
+                System.out.println("■■■■■■■■■■■Client■■ messages ■■■■■■■■■");
                 closing.set(true);
                 messages.notifyAll();
             }
@@ -187,6 +188,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
         int rpos = incoming.rpos();
         boolean traceEnabled = log.isTraceEnabled();
         for (int count = 1; receive(incoming); count++) {
+            System.out.println("■■■■■■■■■■■Client■■ count = " + count);
             if (traceEnabled) {
                 log.trace("data({}) Processed {} data messages", getClientChannel(), count);
             }

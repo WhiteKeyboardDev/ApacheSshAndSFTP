@@ -1,6 +1,5 @@
 package my.test.proxy.client;
 
-import my.test.proxy.server.SftpSubsystemExtend;
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.SshException;
@@ -9,7 +8,6 @@ import org.apache.sshd.common.io.IoWriteFuture;
 import org.apache.sshd.common.session.Session;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.buffer.Buffer;
-import org.apache.sshd.common.util.buffer.ByteArrayBuffer;
 import org.apache.sshd.core.CoreModuleProperties;
 import org.apache.sshd.sftp.client.SftpErrorDataHandler;
 import org.apache.sshd.sftp.client.SftpVersionSelector;
@@ -20,32 +18,23 @@ import java.io.InterruptedIOException;
 import java.time.Duration;
 import java.time.Instant;
 
+import static my.test.proxy.client.SingleSftpClient.singleSftpClient;
+
 public class DefaultSftpClientExtend extends DefaultSftpClient {
-
-    private SingleSftpClient singleSftpClient;
-    private SftpSubsystemExtend sftpSubsystemExtend;
-
-    public void setProxySingleSftpClient(SingleSftpClient singleSftpClient) {
-        this.singleSftpClient = singleSftpClient;
-    }
 
     public DefaultSftpClientExtend(ClientSession clientSession, SftpVersionSelector initialVersionSelector, SftpErrorDataHandler errorDataHandler) throws IOException {
         super(clientSession, initialVersionSelector, errorDataHandler);
     }
-
-    public void setProxySftpSubsystemExtend(SftpSubsystemExtend sftpSubsystemExtend) {
-        this.sftpSubsystemExtend = sftpSubsystemExtend;
-    }
-
 
     @Override
     protected int data(byte[] buf, int start, int len) throws IOException {
         System.out.println("■■■■■■■■■■■Client■■ data ■■■■■■■■■■■■■■■");
         System.out.println(new String(buf, start, len));
         System.out.println();
-        if (sftpSubsystemExtend != null && singleSftpClient.isAuthenticationSuccessClientSession && singleSftpClient.serverAuthenticated) {
-            Buffer send = new ByteArrayBuffer(buf, start, len);
-            sftpSubsystemExtend.publicSend(send);
+
+        if (singleSftpClient.getSftpSubsystemExtend() != null && singleSftpClient.isAuthenticationSuccessClientSession && singleSftpClient.serverAuthenticated) {
+            singleSftpClient.getSftpSubsystemExtend().publicSend(buf, start, len);
+            receiveBuffer.compact();
             return 0;
         } else {
             return super.data(buf, start, len);
@@ -59,8 +48,12 @@ public class DefaultSftpClientExtend extends DefaultSftpClient {
         return super.send(cmd, buffer);
     }
 
-    public void publicSend(byte[] buf, int start, int len) {
-
+    public void publicSend(int type, Buffer buffer) throws IOException {
+        System.out.println("■■■■■■■■■■■Client■■ publicSend ■■■■■■■■■■■■■■■");
+        ClientChannel clientChannel = getClientChannel();
+        IoOutputStream asyncIn = clientChannel.getAsyncIn();
+        IoWriteFuture writeFuture = asyncIn.writeBuffer(buffer);
+        writeFuture.verify();
     }
 
     @Override

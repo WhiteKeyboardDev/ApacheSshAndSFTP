@@ -36,9 +36,18 @@ public class ProxySftpServer {
           public boolean authenticate(String s, String s1, ServerSession serverSession) throws PasswordChangeRequiredException, AsyncAuthException {
               try {
                   singleSftpClient.createSftpClient();
+                  System.out.println();
+                  System.out.println("Thread Sleep 1 seconds start");
+                  try {
+                      Thread.sleep(1000);
+                  } catch (InterruptedException e) {
+                      throw new RuntimeException(e);
+                  }
               } catch (IOException e) {
                   throw new RuntimeException(e);
               }
+              System.out.println("Thread Sleep 1 seconds end");
+              System.out.println();
 
               singleSftpClient.setServerAuthenticated(true);
 

@@ -17,9 +17,12 @@ import static my.test.proxy.client.SingleSftpClient.singleSftpClient;
 
 public class ProxySftpSubsystemFactoryExtend extends SftpSubsystemFactory {
 
+
+
     @Override
-    public Command createSubsystem(ChannelSession channel) throws IOException {
+    public Command createSubsystem(ChannelSession channel) {
         SftpSubsystemExtend sftpSubsystemExtend = new SftpSubsystemExtend(channel, this);
+
         GenericUtils.forEach(getRegisteredListeners(), sftpSubsystemExtend::addSftpEventListener);
         sftpSubsystemExtend.setSingleSftpClient(singleSftpClient);
         singleSftpClient.setSftpSubsystemExtend(sftpSubsystemExtend);
