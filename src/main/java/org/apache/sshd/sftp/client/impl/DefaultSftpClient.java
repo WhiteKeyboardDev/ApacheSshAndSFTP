@@ -246,6 +246,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
      * @throws IOException if failed to process the buffer
      */
     protected void process(Buffer incoming) throws IOException {
+        System.out.println("■■■■■■■■■■■Client■■ process ■■■■■■■■■■■■■■■");
         // create a copy of the buffer in case it is being re-used
         Buffer buffer = new ByteArrayBuffer(incoming.available() + Long.SIZE, false);
         buffer.putBuffer(incoming);
@@ -269,6 +270,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
 
     @Override
     public int send(int cmd, Buffer buffer) throws IOException {
+        System.out.println("■■■■■■■■■■■Client■■ send ■■■■■■■■■■■■■■■");
         int id = cmdId.incrementAndGet();
         int len = buffer.available();
         if (log.isTraceEnabled()) {
@@ -305,6 +307,7 @@ public class DefaultSftpClient extends AbstractSftpClient {
 
     @Override
     public Buffer receive(int id) throws IOException {
+        System.out.println("■■■■■■■■■■■Client■■ receive - receive ■■■■■■■■■■■■■■■");
         Session session = getClientSession();
         Duration idleTimeout = CoreModuleProperties.IDLE_TIMEOUT.getRequired(session);
         if (GenericUtils.isNegativeOrNull(idleTimeout)) {

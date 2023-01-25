@@ -1,6 +1,5 @@
 package my.test.proxy.server;
 
-import my.test.proxy.client.SingleSftpClient;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.ObjectBuilder;
 import org.apache.sshd.common.util.threads.CloseableExecutorService;
@@ -9,13 +8,12 @@ import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.server.command.Command;
 import org.apache.sshd.sftp.server.*;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.function.Supplier;
 
 import static my.test.proxy.client.SingleSftpClient.singleSftpClient;
 
-public class ProxySftpSubsystemFactoryExtend extends SftpSubsystemFactory {
+public class SftpSubsystemFactoryExtend extends SftpSubsystemFactory {
 
 
 
@@ -30,7 +28,7 @@ public class ProxySftpSubsystemFactoryExtend extends SftpSubsystemFactory {
         return sftpSubsystemExtend;
     }
 
-    public static class Builder extends AbstractSftpEventListenerManager implements ObjectBuilder<ProxySftpSubsystemFactoryExtend> {
+    public static class Builder extends AbstractSftpEventListenerManager implements ObjectBuilder<SftpSubsystemFactoryExtend> {
         private Supplier<? extends CloseableExecutorService> executorsProvider;
         private UnsupportedAttributePolicy policy = DEFAULT_POLICY;
         private SftpFileSystemAccessor fileSystemAccessor = SftpFileSystemAccessor.DEFAULT;
@@ -67,11 +65,11 @@ public class ProxySftpSubsystemFactoryExtend extends SftpSubsystemFactory {
         }
 
         @Override
-        public ProxySftpSubsystemFactoryExtend build() {
-            ProxySftpSubsystemFactoryExtend factory = new ProxySftpSubsystemFactoryExtend();
+        public SftpSubsystemFactoryExtend build() {
+            SftpSubsystemFactoryExtend factory = new SftpSubsystemFactoryExtend();
             factory.setExecutorServiceProvider(executorsProvider);
             factory.setUnsupportedAttributePolicy(policy);
-//            factory.setFileSystemAccessor(fileSystemAccessor);
+            factory.setFileSystemAccessor(fileSystemAccessor);
             factory.setErrorStatusDataHandler(errorStatusDataHandler);
             factory.setErrorChannelDataReceiver(errorChannelDataReceiver);
             GenericUtils.forEach(getRegisteredListeners(), factory::addSftpEventListener);

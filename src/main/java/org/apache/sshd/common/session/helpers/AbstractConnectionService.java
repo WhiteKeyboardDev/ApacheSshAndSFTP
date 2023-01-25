@@ -447,8 +447,6 @@ public abstract class AbstractConnectionService
     public void process(int cmd, Buffer buffer) throws Exception {
         System.out.println();
         System.out.println("■■■■■■■■■■■■■■■■ This 'SshConstants."+SshConstants.getCommandMessageName(cmd)+"'");
-        System.out.println("■■■■■■■■■■■■■■■■ byteData : ");
-        System.out.println(new String(buffer.array()));
         System.out.println();
 
         switch (cmd) {

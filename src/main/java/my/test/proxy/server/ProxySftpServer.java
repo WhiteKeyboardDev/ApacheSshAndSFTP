@@ -1,7 +1,6 @@
 package my.test.proxy.server;
 
 import my.test.proxy.aa.key.GenerateServerKeyPair;
-import my.test.proxy.client.SingleSftpClient;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.AsyncAuthException;
 import org.apache.sshd.server.auth.password.PasswordAuthenticator;
@@ -24,10 +23,13 @@ public class ProxySftpServer {
         sshd.setHost("192.168.5.171");
 
         // SshServer Port
-        sshd.setPort(2024);
+        sshd.setPort(2022);
 
         // SFTP server setting
-        ProxySftpSubsystemFactoryExtend sftpSubsystemFactory = new ProxySftpSubsystemFactoryExtend.Builder().build();
+        SftpSubsystemFactoryExtend sftpSubsystemFactory = new SftpSubsystemFactoryExtend.Builder()
+//                .withFileSystemAccessor(new NativeFileSystemFactory())
+                .withFileSystemAccessor(new SftpFileSystemAccessorExtend())
+                .build();
         sshd.setSubsystemFactories(Collections.singletonList(sftpSubsystemFactory));
 
         // Add authentication implementation.

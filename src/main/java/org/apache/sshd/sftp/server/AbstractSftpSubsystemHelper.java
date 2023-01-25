@@ -323,6 +323,7 @@ public abstract class AbstractSftpSubsystemHelper
      * @throws IOException if anything wrong happens
      */
     protected void process(Buffer buffer) throws IOException {
+        System.out.println("■■■■■■■■■■■Server■■ process ■■■■■■■■■■■■■■■");
         ServerSession session = getServerSession();
         int length = buffer.getInt();
         int type = buffer.getUByte();

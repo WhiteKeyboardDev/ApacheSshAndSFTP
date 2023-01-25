@@ -8,10 +8,12 @@ import org.apache.sshd.common.io.IoWriteFuture;
 import org.apache.sshd.common.session.Session;
 import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.buffer.Buffer;
+import org.apache.sshd.common.util.buffer.ByteArrayBuffer;
 import org.apache.sshd.core.CoreModuleProperties;
 import org.apache.sshd.sftp.client.SftpErrorDataHandler;
 import org.apache.sshd.sftp.client.SftpVersionSelector;
 import org.apache.sshd.sftp.client.impl.DefaultSftpClient;
+import org.apache.sshd.sftp.common.SftpConstants;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -34,32 +36,31 @@ public class DefaultSftpClientExtend extends DefaultSftpClient {
 
         if (singleSftpClient.getSftpSubsystemExtend() != null && singleSftpClient.isAuthenticationSuccessClientSession && singleSftpClient.serverAuthenticated) {
             singleSftpClient.getSftpSubsystemExtend().publicSend(buf, start, len);
-            receiveBuffer.compact();
             return 0;
         } else {
             return super.data(buf, start, len);
         }
     }
 
-    // Target Server 로 보내기
-    @Override
-    public int send(int cmd, Buffer buffer) throws IOException {
-        System.out.println("■■■■■■■■■■■Client■■ send ■■■■■■■■■■■■■■■");
-        return super.send(cmd, buffer);
-    }
-
-    public void publicSend(int type, Buffer buffer) throws IOException {
+    public void publicSend(Buffer serverBuffer) throws IOException {
         System.out.println("■■■■■■■■■■■Client■■ publicSend ■■■■■■■■■■■■■■■");
+        Buffer buffer = new ByteArrayBuffer(serverBuffer.available() + Long.SIZE, false);
+        buffer.putBuffer(serverBuffer);
+
+        int rpos = buffer.rpos();
+        int length = buffer.getInt();
+        int type = buffer.getUByte();
+        Integer id = buffer.getInt();
+        buffer.rpos(rpos);
+
+        log.debug("process({}) id={}, type={}, len={}",
+            getClientChannel(), id, SftpConstants.getCommandMessageName(type), length);
+
         ClientChannel clientChannel = getClientChannel();
         IoOutputStream asyncIn = clientChannel.getAsyncIn();
         IoWriteFuture writeFuture = asyncIn.writeBuffer(buffer);
-        writeFuture.verify();
-    }
-
-    @Override
-    protected void process(Buffer incoming) throws IOException {
-        System.out.println("■■■■■■■■■■■Client■■ process ■■■■■■■■■■■■■■■");
-        super.process(incoming);
+        var t = writeFuture.verify();
+        t.isWritten();
     }
 
     /* receive */
