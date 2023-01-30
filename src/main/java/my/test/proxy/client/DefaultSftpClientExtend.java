@@ -50,11 +50,11 @@ public class DefaultSftpClientExtend extends DefaultSftpClient {
         int rpos = buffer.rpos();
         int length = buffer.getInt();
         int type = buffer.getUByte();
-        Integer id = buffer.getInt();
+        Integer server_id = buffer.getInt();
         buffer.rpos(rpos);
 
-        log.debug("process({}) id={}, type={}, len={}",
-            getClientChannel(), id, SftpConstants.getCommandMessageName(type), length);
+        log.debug("process({}), server_id={}, type={}, len={}",
+            getClientChannel(), server_id, SftpConstants.getCommandMessageName(type), length);
 
         ClientChannel clientChannel = getClientChannel();
         IoOutputStream asyncIn = clientChannel.getAsyncIn();
@@ -67,8 +67,6 @@ public class DefaultSftpClientExtend extends DefaultSftpClient {
     @Override
     protected boolean receive(Buffer incoming) throws IOException {
         System.out.println("■■■■■■■■■■■Client■■ receive - protected ■■■■■■■■■■■■■■■");
-        System.out.println(new String(incoming.array()));
-        System.out.println("");
         return super.receive(incoming);
     }
 

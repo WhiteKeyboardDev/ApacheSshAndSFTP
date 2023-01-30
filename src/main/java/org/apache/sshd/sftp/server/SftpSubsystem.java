@@ -269,8 +269,6 @@ public class SftpSubsystem
     @Override
     public int data(ChannelSession channel, byte[] buf, int start, int len) throws IOException {
         System.out.println("■■■■■■■■■■■Server■■ data ■■■■■■■■■■■■■■■");
-        System.out.println(new String(buf, start, len));
-        System.out.println();
         buffer.compact();
         buffer.putRawBytes(buf, start, len);
         while (buffer.available() >= Integer.BYTES) {
@@ -300,7 +298,6 @@ public class SftpSubsystem
             LocalWindow localWindow = channel.getLocalWindow();
             while (true) {
                 Buffer buffer = requests.take();
-                System.out.println("■■■■■■■■■■■Server■■ requests.take() ■■■■■■■■■■■■■■■");
                 if (buffer == CLOSE) {
                     break;
                 }
