@@ -246,7 +246,6 @@ public class DefaultSftpClient extends AbstractSftpClient {
      * @throws IOException if failed to process the buffer
      */
     protected void process(Buffer incoming) throws IOException {
-        System.out.println("■■■■■■■■■■■Client■■ process ■■■■■■■■■■■■■■■");
         // create a copy of the buffer in case it is being re-used
         Buffer buffer = new ByteArrayBuffer(incoming.available() + Long.SIZE, false);
         buffer.putBuffer(incoming);
@@ -261,6 +260,8 @@ public class DefaultSftpClient extends AbstractSftpClient {
             log.trace("process({}) id={}, type={}, len={}",
                     getClientChannel(), id, SftpConstants.getCommandMessageName(type), length);
         }
+
+
 
         synchronized (messages) {
             messages.put(id, buffer);

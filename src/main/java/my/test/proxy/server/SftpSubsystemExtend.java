@@ -26,12 +26,11 @@ public class SftpSubsystemExtend extends SftpSubsystem {
 
     static int tmptmp = 0;
 
-    public void publicSend(byte[] buf, int start, int len) throws IOException {
+    public void publicSend(Buffer buf) throws IOException {
         System.out.println("■■■■■■■■■■■Server■■ publicSend ■■■■■■■■■■■■■■■");
 
-        Buffer tmpBuffer = new ByteArrayBuffer(buf, start, len);
-        BufferUtils.updateLengthPlaceholder(tmpBuffer, 0);
-        out.writeBuffer(tmpBuffer);
+//        BufferUtils.updateLengthPlaceholder(buf, 0);
+        out.writeBuffer(buf);
     }
 
     static int count = 0;
@@ -76,26 +75,6 @@ public class SftpSubsystemExtend extends SftpSubsystem {
     @Override
     public int data(ChannelSession channel, byte[] buf, int start, int len) throws IOException {
         super.data(channel, buf, start, len);
-//        else {
-//            byte[] replyPrepare = {};
-//            replyPrepare = Arrays.copyOf(buf, buf.length);
-//            Buffer replyBuffer = new ByteArrayBuffer(replyPrepare, start, len);
-//
-//            int length = replyBuffer.getInt();
-//            int type = replyBuffer.getUByte();
-//            int id = replyBuffer.getInt();
-//            String str = replyBuffer.getString();
-//
-//            byte[] reply = {};
-//            reply = Arrays.copyOfRange(buf, start, len);
-//            Buffer replyBufferSend = new ByteArrayBuffer(reply, start, len);
-//
-//            System.out.println("■■■■■■■■■■■Server■■ data ■■■■■■■■■■■■■■■");
-//            System.out.println(new String(buf, start, len));
-//            log.debug("process({})[length={}, type={}, id={}] processing",
-//                    getSession(), length, SftpConstants.getCommandMessageName(type), id);
-//            System.out.println();
-//        }
         return 0;
     }
 }

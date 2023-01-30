@@ -269,6 +269,7 @@ public class SftpSubsystem
     @Override
     public int data(ChannelSession channel, byte[] buf, int start, int len) throws IOException {
         System.out.println("■■■■■■■■■■■Server■■ data ■■■■■■■■■■■■■■■");
+        System.out.println(new String(buf, start, len));
         buffer.compact();
         buffer.putRawBytes(buf, start, len);
         while (buffer.available() >= Integer.BYTES) {
