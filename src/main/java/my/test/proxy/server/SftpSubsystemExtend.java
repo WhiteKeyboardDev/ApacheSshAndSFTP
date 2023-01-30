@@ -4,8 +4,6 @@ import my.test.proxy.client.SingleSftpClient;
 import org.apache.sshd.common.channel.LocalWindow;
 import org.apache.sshd.common.session.Session;
 import org.apache.sshd.common.util.buffer.Buffer;
-import org.apache.sshd.common.util.buffer.BufferUtils;
-import org.apache.sshd.common.util.buffer.ByteArrayBuffer;
 import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.sftp.server.SftpSubsystem;
 import org.apache.sshd.sftp.server.SftpSubsystemConfigurator;

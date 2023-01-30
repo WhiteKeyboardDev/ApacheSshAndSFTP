@@ -33,13 +33,7 @@ public class DefaultSftpClientExtend extends DefaultSftpClient {
         System.out.println("■■■■■■■■■■■Client■■ data ■■■■■■■■■■■■■■■");
         System.out.println(new String(buf, start, len));
         System.out.println();
-
-        if (singleSftpClient.getSftpSubsystemExtend() != null && singleSftpClient.isAuthenticationSuccessClientSession && singleSftpClient.serverAuthenticated) {
-            singleSftpClient.getSftpSubsystemExtend().publicSend(buf, start, len);
-            return 0;
-        } else {
-            return super.data(buf, start, len);
-        }
+        return super.data(buf, start, len);
     }
 
     public void publicSend(Buffer serverBuffer) throws IOException {
